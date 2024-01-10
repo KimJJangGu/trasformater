@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:transformation/use_case/length_converter_use_case.dart';
+import 'package:go_router/go_router.dart';
+import 'package:transformation/route.dart';
+import '../use_case/length_converter_use_case.dart';
+import 'weight_screen.dart';
 
 class LengthScreen extends StatefulWidget {
   const LengthScreen({super.key});
@@ -12,7 +15,8 @@ class LengthScreen extends StatefulWidget {
 
 class _LengthScreenState extends State<LengthScreen> {
   final TextEditingController lengthController = TextEditingController();
-  final LengthConverterUseCase lengthConverterUseCase = LengthConverterUseCase();
+  final LengthConverterUseCase lengthConverterUseCase =
+  LengthConverterUseCase();
   final List<String> units = ["mm", "cm", "m", "km", "in", "ft", "yd", "mile"];
 
   double length = 0;
@@ -53,46 +57,46 @@ class _LengthScreenState extends State<LengthScreen> {
                       convertLength();
                     });
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    suffixIcon: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: false,
+                        value: fromUnit,
+                        onChanged: (value) {
+                          setState(() {
+                            fromUnit = value!;
+                            convertLength();
+                          });
+                        },
+                        items:
+                        units.map<DropdownMenuItem<String>>((String unit) {
+                          return DropdownMenuItem<String>(
+                            value: unit,
+                            child: Text(
+                              unit,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                     labelText: '길이 입력',
                     hintText: '길이를 입력하세요',
-                    focusedBorder: UnderlineInputBorder(
+                    focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
                     ),
                   ),
                   style: const TextStyle(fontSize: 20),
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 const Padding(
                   padding: EdgeInsets.all(0.0),
                 ),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: Center(
-                        child: DropdownButton<String>(
-                          isExpanded: false,
-                          value: fromUnit,
-                          onChanged: (value) {
-                            setState(() {
-                              fromUnit = value!;
-                              convertLength();
-                            });
-                          },
-                          items: units.map<DropdownMenuItem<String>>((String unit) {
-                            return DropdownMenuItem<String>(
-                              value: unit,
-                              child: Text(
-                                unit,
-                                style: const TextStyle(fontSize: 20),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ],
+                  children: [],
                 ),
                 const Padding(
                   padding: EdgeInsets.all(2.0),
@@ -122,9 +126,9 @@ class _LengthScreenState extends State<LengthScreen> {
                   alignment: Alignment.bottomRight,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      // backgroundColor: Colors.black,
+                      backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
-                      elevation: 4,
+                      elevation: 2,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -158,25 +162,37 @@ class _LengthScreenState extends State<LengthScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        elevation: 4,
+        backgroundColor: Colors.white,
         onPressed: () {
           showModalBottomSheet(
+            backgroundColor: Colors.white,
             context: context,
             builder: (BuildContext context) {
-              return Container(
-                child: Column(
-                  children: units.map((String unit) {
-                    return ListTile(
-                      title: Text(unit),
-                      onTap: () {
-                        setState(() {
-                          fromUnit = unit;
-                          convertLength();
-                          Navigator.pop(context);
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
+              return Column(
+                children: [
+                  ListTile(
+                    title: const Center(
+                        child: Text(
+                          '무게 변환',
+                          style: TextStyle(fontSize: 20),
+                        )),
+                    onTap: () {
+                      context.go('/start/weight');
+                    },
+                  ),
+                  ListTile(
+                    title: const Center(
+                        child: Text(
+                          '속도 변환',
+                          style: TextStyle(fontSize: 20),
+                        )),
+                    onTap: () {
+                      context.go('/start/speed');
+                    },
+                  ),
+                  // Add other options as needed
+                ],
               );
             },
           );
@@ -196,9 +212,12 @@ class _LengthScreenState extends State<LengthScreen> {
     } else {
       for (String toUnit in units) {
         double resultValue = length;
-        resultValue = lengthConverterUseCase.convertToMeter(resultValue, fromUnit);
-        resultValue = lengthConverterUseCase.convertFromMeter(resultValue, toUnit);
-        _transResult.add('${lengthConverterUseCase.formatNumber(resultValue)} $toUnit');
+        resultValue =
+            lengthConverterUseCase.convertToMeter(resultValue, fromUnit);
+        resultValue =
+            lengthConverterUseCase.convertFromMeter(resultValue, toUnit);
+        _transResult
+            .add('${lengthConverterUseCase.formatNumber(resultValue)} $toUnit');
       }
     }
   }
