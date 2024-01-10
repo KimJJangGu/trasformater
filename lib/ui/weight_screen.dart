@@ -92,8 +92,7 @@ class _WeightScreenState extends State<WeightScreen> {
                 ),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                  ],
+                  children: [],
                 ),
                 const Padding(
                   padding: EdgeInsets.all(2.0),
@@ -163,32 +162,40 @@ class _WeightScreenState extends State<WeightScreen> {
         elevation: 4,
         onPressed: () {
           showModalBottomSheet(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.transparent,
             context: context,
             builder: (BuildContext context) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: const Center(
-                        child: Text(
-                          '길이 변환',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    onTap: () {
-                      context.go('/start');
-                    },
-                  ),
-                  ListTile(
-                    title: const Center(
-                        child: Text(
-                          '속도 변환',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    onTap: () {
-                      context.go('/start/speed');
-                    },
-                  ),
-                ],
+              return Container(
+                height: 300,
+                margin: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Center(
+                          child: Text(
+                        '길이',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      onTap: () {
+                        context.go('/start');
+                      },
+                    ),
+                    ListTile(
+                      title: const Center(
+                          child: Text(
+                        '속도',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      onTap: () {
+                        context.go('/start/speed');
+                      },
+                    ),
+                  ],
+                ),
               );
             },
           );

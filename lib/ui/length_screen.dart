@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:transformation/route.dart';
 import '../use_case/length_converter_use_case.dart';
-import 'weight_screen.dart';
 
 class LengthScreen extends StatefulWidget {
   const LengthScreen({super.key});
@@ -15,8 +13,7 @@ class LengthScreen extends StatefulWidget {
 
 class _LengthScreenState extends State<LengthScreen> {
   final TextEditingController lengthController = TextEditingController();
-  final LengthConverterUseCase lengthConverterUseCase =
-  LengthConverterUseCase();
+  final LengthConverterUseCase lengthConverterUseCase = LengthConverterUseCase();
   final List<String> units = ["mm", "cm", "m", "km", "in", "ft", "yd", "mile"];
 
   double length = 0;
@@ -68,8 +65,7 @@ class _LengthScreenState extends State<LengthScreen> {
                             convertLength();
                           });
                         },
-                        items:
-                        units.map<DropdownMenuItem<String>>((String unit) {
+                        items: units.map<DropdownMenuItem<String>>((String unit) {
                           return DropdownMenuItem<String>(
                             value: unit,
                             child: Text(
@@ -166,33 +162,40 @@ class _LengthScreenState extends State<LengthScreen> {
         backgroundColor: Colors.white,
         onPressed: () {
           showModalBottomSheet(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.transparent,
             context: context,
             builder: (BuildContext context) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: const Center(
-                        child: Text(
-                          '무게 변환',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    onTap: () {
-                      context.go('/start/weight');
-                    },
-                  ),
-                  ListTile(
-                    title: const Center(
-                        child: Text(
-                          '속도 변환',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    onTap: () {
-                      context.go('/start/speed');
-                    },
-                  ),
-                  // Add other options as needed
-                ],
+              return Container(
+                height: 300,
+                margin: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Center(
+                          child: Text(
+                        '무게',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      onTap: () {
+                        context.go('/start/weight');
+                      },
+                    ),
+                    ListTile(
+                      title: const Center(
+                          child: Text(
+                        '속도',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      onTap: () {
+                        context.go('/start/speed');
+                      },
+                    ),
+                  ],
+                ),
               );
             },
           );
@@ -212,12 +215,9 @@ class _LengthScreenState extends State<LengthScreen> {
     } else {
       for (String toUnit in units) {
         double resultValue = length;
-        resultValue =
-            lengthConverterUseCase.convertToMeter(resultValue, fromUnit);
-        resultValue =
-            lengthConverterUseCase.convertFromMeter(resultValue, toUnit);
-        _transResult
-            .add('${lengthConverterUseCase.formatNumber(resultValue)} $toUnit');
+        resultValue = lengthConverterUseCase.convertToMeter(resultValue, fromUnit);
+        resultValue = lengthConverterUseCase.convertFromMeter(resultValue, toUnit);
+        _transResult.add('${lengthConverterUseCase.formatNumber(resultValue)} $toUnit');
       }
     }
   }

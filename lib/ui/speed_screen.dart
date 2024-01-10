@@ -161,32 +161,40 @@ class _SpeedScreenState extends State<SpeedScreen> {
         backgroundColor: Colors.white,
         onPressed: () {
           showModalBottomSheet(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.transparent,
             context: context,
             builder: (BuildContext context) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: const Center(
-                        child: Text(
-                      '길이 변환',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                    onTap: () {
-                      context.go('/start');
-                    },
-                  ),
-                  ListTile(
-                    title: const Center(
-                        child: Text(
-                      '무게 변환',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                    onTap: () {
-                      context.go('/start/weight');
-                    },
-                  ),
-                ],
+              return Container(
+                height: 300,
+                margin: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Center(
+                          child: Text(
+                        '길이',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      onTap: () {
+                        context.go('/start');
+                      },
+                    ),
+                    ListTile(
+                      title: const Center(
+                          child: Text(
+                        '무게',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      onTap: () {
+                        context.go('/start/weight');
+                      },
+                    ),
+                  ],
+                ),
               );
             },
           );

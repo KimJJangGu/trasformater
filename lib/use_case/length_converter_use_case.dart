@@ -63,7 +63,6 @@ class LengthConverterUseCase {
   }
 
   String formatNumber(double resultNum) {
-    // 천 단위마다 쉼표 추가, 소수점 표현 기능 구현
     return NumberFormat('###,###.##########').format(resultNum);
   }
 }
