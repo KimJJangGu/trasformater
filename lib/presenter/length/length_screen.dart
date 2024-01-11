@@ -1,42 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:transformation/presenter/length/length_screen_view_model.dart';
 
-import '../use_case/weight_convert_use_case.dart';
-import 'length_screen.dart';
-
-class WeightScreen extends StatefulWidget {
-  const WeightScreen({Key? key}) : super(key: key);
+class LengthScreen extends StatefulWidget {
+  const LengthScreen({super.key});
 
   @override
-  _WeightScreenState createState() => _WeightScreenState();
+  _LengthScreenState createState() {
+    return _LengthScreenState();
+  }
 }
 
-class _WeightScreenState extends State<WeightScreen> {
-  final TextEditingController weightController = TextEditingController();
-  final WeightConverterUseCase weightConverterUseCase = WeightConverterUseCase();
-  final List<String> units = ["mg", "g", "kg", "t", "kt", "gr", "oz", "lb"];
-
-  double weight = 0;
-  String fromUnit = "mg";
-  final List<String> _transResult = [];
+class _LengthScreenState extends State<LengthScreen> {
+  final LengthScreenViewModel _lengthScreenViewModel = LengthScreenViewModel();
 
   @override
   void dispose() {
-    weightController.dispose();
+    _lengthScreenViewModel.lengthController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    convertWeight();
+    _lengthScreenViewModel.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('무게 변환'),
+        title: const Text('길이 변환'),
       ),
       body: Column(
         children: [
@@ -46,26 +40,26 @@ class _WeightScreenState extends State<WeightScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TextField(
-                  controller: weightController,
+                  controller: _lengthScreenViewModel.lengthController,
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setState(() {
-                      weight = double.tryParse(value) ?? 0;
-                      convertWeight();
+                      _lengthScreenViewModel.length = double.tryParse(value) ?? 0;
+                      _lengthScreenViewModel.convertLength();
                     });
                   },
                   decoration: InputDecoration(
                     suffixIcon: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         isExpanded: false,
-                        value: fromUnit,
+                        value: _lengthScreenViewModel.fromUnit,
                         onChanged: (value) {
                           setState(() {
-                            fromUnit = value!;
-                            convertWeight();
+                            _lengthScreenViewModel.fromUnit = value!;
+                            _lengthScreenViewModel.convertLength();
                           });
                         },
-                        items: units.map<DropdownMenuItem<String>>((String unit) {
+                        items: _lengthScreenViewModel.units.map<DropdownMenuItem<String>>((String unit) {
                           return DropdownMenuItem<String>(
                             value: unit,
                             child: Text(
@@ -76,8 +70,8 @@ class _WeightScreenState extends State<WeightScreen> {
                         }).toList(),
                       ),
                     ),
-                    labelText: '무게 입력',
-                    hintText: '무게를 입력하세요',
+                    labelText: '길이 입력',
+                    hintText: '길이를 입력하세요',
                     focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
                     ),
@@ -101,7 +95,7 @@ class _WeightScreenState extends State<WeightScreen> {
                   width: double.infinity,
                   height: 230,
                   child: ListView(
-                    children: _transResult.map((result) {
+                    children: _lengthScreenViewModel.transResult.map((result) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -128,7 +122,6 @@ class _WeightScreenState extends State<WeightScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      fixedSize: const Size(95, 30),
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -138,7 +131,10 @@ class _WeightScreenState extends State<WeightScreen> {
                         ),
                         backgroundColor: Colors.black26,
                       ));
-                      resetValues();
+                      _lengthScreenViewModel.resetValues();
+                      setState(() {
+
+                      });
                     },
                     child: const Text('초기화', style: TextStyle(fontSize: 16)),
                   ),
@@ -148,9 +144,9 @@ class _WeightScreenState extends State<WeightScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 4),
+              padding: const EdgeInsets.all(4.0),
               child: Image.asset(
-                'assets/body_back/weight.png',
+                'assets/body_back/ladder.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -158,16 +154,16 @@ class _WeightScreenState extends State<WeightScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
         elevation: 4,
+        backgroundColor: Colors.white,
         onPressed: () {
           showModalBottomSheet(
             backgroundColor: Colors.transparent,
             context: context,
             builder: (BuildContext context) {
               return Container(
-                height: 300,
-                margin: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
+                height: 170,
+                margin: const EdgeInsets.only(left: 70, right: 70, bottom: 70),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -177,11 +173,11 @@ class _WeightScreenState extends State<WeightScreen> {
                     ListTile(
                       title: const Center(
                           child: Text(
-                        '길이',
+                        '무게',
                         style: TextStyle(fontSize: 20),
                       )),
                       onTap: () {
-                        context.go('/start');
+                        context.go('/start/weight');
                       },
                     ),
                     ListTile(
@@ -206,28 +202,5 @@ class _WeightScreenState extends State<WeightScreen> {
         child: const Icon(Icons.autorenew_rounded),
       ),
     );
-  }
-
-  void convertWeight() {
-    _transResult.clear();
-    if (weight == 0) {
-      _transResult.addAll(units.map((unit) => unit));
-    } else {
-      for (String toUnit in units) {
-        double resultValue = weight;
-        resultValue = weightConverterUseCase.convertToGram(resultValue, fromUnit);
-        resultValue = weightConverterUseCase.convertFromGram(resultValue, toUnit);
-        _transResult.add('${weightConverterUseCase.formatNumber(resultValue)} $toUnit');
-      }
-    }
-  }
-
-  void resetValues() {
-    setState(() {
-      weightController.clear();
-      weight = 0;
-      _transResult.clear();
-    });
-    convertWeight();
   }
 }

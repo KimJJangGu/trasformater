@@ -1,42 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../use_case/length_converter_use_case.dart';
+import '../../domain/use_case/speed_convert_use_case.dart';
 
-class LengthScreen extends StatefulWidget {
-  const LengthScreen({super.key});
+class SpeedScreen extends StatefulWidget {
+  const SpeedScreen({Key? key}) : super(key: key);
 
   @override
-  _LengthScreenState createState() {
-    return _LengthScreenState();
-  }
+  _SpeedScreenState createState() => _SpeedScreenState();
 }
 
-class _LengthScreenState extends State<LengthScreen> {
-  final TextEditingController lengthController = TextEditingController();
-  final LengthConverterUseCase lengthConverterUseCase = LengthConverterUseCase();
-  final List<String> units = ["mm", "cm", "m", "km", "in", "ft", "yd", "mile"];
+class _SpeedScreenState extends State<SpeedScreen> {
+  final TextEditingController speedController = TextEditingController();
+  final SpeedConverterUseCase speedConverterUseCase = SpeedConverterUseCase();
+  final List<String> units = ["m/s", "m/h", "km/s", "km/h", "mi/s", "mi/h", "ft/s", "ft/h"];
 
-  double length = 0;
-  String fromUnit = "mm";
+  double speed = 0;
+  String fromUnit = "m/s";
   final List<String> _transResult = [];
 
   @override
   void dispose() {
-    lengthController.dispose();
+    speedController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    convertLength();
+    convertSpeed();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('길이 변환'),
+        title: const Text('속도 변환'),
       ),
       body: Column(
         children: [
@@ -46,12 +44,12 @@ class _LengthScreenState extends State<LengthScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TextField(
-                  controller: lengthController,
+                  controller: speedController,
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setState(() {
-                      length = double.tryParse(value) ?? 0;
-                      convertLength();
+                      speed = double.tryParse(value) ?? 0;
+                      convertSpeed();
                     });
                   },
                   decoration: InputDecoration(
@@ -62,7 +60,7 @@ class _LengthScreenState extends State<LengthScreen> {
                         onChanged: (value) {
                           setState(() {
                             fromUnit = value!;
-                            convertLength();
+                            convertSpeed();
                           });
                         },
                         items: units.map<DropdownMenuItem<String>>((String unit) {
@@ -76,8 +74,8 @@ class _LengthScreenState extends State<LengthScreen> {
                         }).toList(),
                       ),
                     ),
-                    labelText: '길이 입력',
-                    hintText: '길이를 입력하세요',
+                    labelText: '속도 입력',
+                    hintText: '속도를 입력하세요',
                     focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
                     ),
@@ -148,9 +146,9 @@ class _LengthScreenState extends State<LengthScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(32.0),
               child: Image.asset(
-                'assets/body_back/ladder.png',
+                'assets/body_back/speed.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -166,8 +164,8 @@ class _LengthScreenState extends State<LengthScreen> {
             context: context,
             builder: (BuildContext context) {
               return Container(
-                height: 300,
-                margin: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
+                height: 170,
+                margin: const EdgeInsets.only(left: 70, right: 70, bottom: 70),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -177,21 +175,21 @@ class _LengthScreenState extends State<LengthScreen> {
                     ListTile(
                       title: const Center(
                           child: Text(
-                        '무게',
+                        '길이',
                         style: TextStyle(fontSize: 20),
                       )),
                       onTap: () {
-                        context.go('/start/weight');
+                        context.go('/start');
                       },
                     ),
                     ListTile(
                       title: const Center(
                           child: Text(
-                        '속도',
+                        '무게',
                         style: TextStyle(fontSize: 20),
                       )),
                       onTap: () {
-                        context.go('/start/speed');
+                        context.go('/start/weight');
                       },
                     ),
                   ],
@@ -208,26 +206,26 @@ class _LengthScreenState extends State<LengthScreen> {
     );
   }
 
-  void convertLength() {
+  void convertSpeed() {
     _transResult.clear();
-    if (length == 0) {
+    if (speed == 0) {
       _transResult.addAll(units.map((unit) => unit));
     } else {
       for (String toUnit in units) {
-        double resultValue = length;
-        resultValue = lengthConverterUseCase.convertToMeter(resultValue, fromUnit);
-        resultValue = lengthConverterUseCase.convertFromMeter(resultValue, toUnit);
-        _transResult.add('${lengthConverterUseCase.formatNumber(resultValue)} $toUnit');
+        double resultValue = speed;
+        resultValue = speedConverterUseCase.convertToMeterPerSecond(resultValue, fromUnit);
+        resultValue = speedConverterUseCase.convertFromMeterPerSecond(resultValue, toUnit);
+        _transResult.add('${speedConverterUseCase.formatNumber(resultValue)} $toUnit');
       }
     }
   }
 
   void resetValues() {
     setState(() {
-      lengthController.clear();
-      length = 0;
+      speedController.clear();
+      speed = 0;
       _transResult.clear();
     });
-    convertLength();
+    convertSpeed();
   }
 }

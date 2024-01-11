@@ -4,11 +4,6 @@ class SpeedConverterUseCase {
   double convertSpeed(double value, String fromUnit, String toUnit) {
     double resultValue = value;
 
-    if (fromUnit == toUnit) {
-      // 같은 단위로 변환할 필요가 없습니다.
-      return resultValue;
-    }
-
     resultValue = convertToMeterPerSecond(resultValue, fromUnit);
     resultValue = convertFromMeterPerSecond(resultValue, toUnit);
 

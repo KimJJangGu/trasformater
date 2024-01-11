@@ -1,41 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../domain/use_case/weight_convert_use_case.dart';
 
-import '../use_case/speed_convert_use_case.dart';
-
-class SpeedScreen extends StatefulWidget {
-  const SpeedScreen({Key? key}) : super(key: key);
+class WeightScreen extends StatefulWidget {
+  const WeightScreen({Key? key}) : super(key: key);
 
   @override
-  _SpeedScreenState createState() => _SpeedScreenState();
+  _WeightScreenState createState() => _WeightScreenState();
 }
 
-class _SpeedScreenState extends State<SpeedScreen> {
-  final TextEditingController speedController = TextEditingController();
-  final SpeedConverterUseCase speedConverterUseCase = SpeedConverterUseCase();
-  final List<String> units = ["m/s", "m/h", "km/s", "km/h", "mi/s", "mi/h", "ft/s", "ft/h"];
+class _WeightScreenState extends State<WeightScreen> {
+  final TextEditingController weightController = TextEditingController();
+  final WeightConverterUseCase weightConverterUseCase = WeightConverterUseCase();
+  final List<String> units = ["mg", "g", "kg", "t", "kt", "gr", "oz", "lb"];
 
-  double speed = 0;
-  String fromUnit = "m/s";
+  double weight = 0;
+  String fromUnit = "mg";
   final List<String> _transResult = [];
 
   @override
   void dispose() {
-    speedController.dispose();
+    weightController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    convertSpeed();
+    convertWeight();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('속도 변환'),
+        title: const Text('무게 변환'),
       ),
       body: Column(
         children: [
@@ -45,12 +44,12 @@ class _SpeedScreenState extends State<SpeedScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TextField(
-                  controller: speedController,
+                  controller: weightController,
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setState(() {
-                      speed = double.tryParse(value) ?? 0;
-                      convertSpeed();
+                      weight = double.tryParse(value) ?? 0;
+                      convertWeight();
                     });
                   },
                   decoration: InputDecoration(
@@ -61,7 +60,7 @@ class _SpeedScreenState extends State<SpeedScreen> {
                         onChanged: (value) {
                           setState(() {
                             fromUnit = value!;
-                            convertSpeed();
+                            convertWeight();
                           });
                         },
                         items: units.map<DropdownMenuItem<String>>((String unit) {
@@ -75,8 +74,8 @@ class _SpeedScreenState extends State<SpeedScreen> {
                         }).toList(),
                       ),
                     ),
-                    labelText: '속도 입력',
-                    hintText: '속도를 입력하세요',
+                    labelText: '무게 입력',
+                    hintText: '무게를 입력하세요',
                     focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
                     ),
@@ -147,9 +146,9 @@ class _SpeedScreenState extends State<SpeedScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(32.0),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 4),
               child: Image.asset(
-                'assets/body_back/speed.png',
+                'assets/body_back/weight.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -157,16 +156,16 @@ class _SpeedScreenState extends State<SpeedScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        elevation: 4,
         backgroundColor: Colors.white,
+        elevation: 4,
         onPressed: () {
           showModalBottomSheet(
             backgroundColor: Colors.transparent,
             context: context,
             builder: (BuildContext context) {
               return Container(
-                height: 300,
-                margin: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
+                height: 170,
+                margin: const EdgeInsets.only(left: 70, right: 70, bottom: 70),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -186,11 +185,11 @@ class _SpeedScreenState extends State<SpeedScreen> {
                     ListTile(
                       title: const Center(
                           child: Text(
-                        '무게',
+                        '속도',
                         style: TextStyle(fontSize: 20),
                       )),
                       onTap: () {
-                        context.go('/start/weight');
+                        context.go('/start/speed');
                       },
                     ),
                   ],
@@ -207,26 +206,26 @@ class _SpeedScreenState extends State<SpeedScreen> {
     );
   }
 
-  void convertSpeed() {
+  void convertWeight() {
     _transResult.clear();
-    if (speed == 0) {
+    if (weight == 0) {
       _transResult.addAll(units.map((unit) => unit));
     } else {
       for (String toUnit in units) {
-        double resultValue = speed;
-        resultValue = speedConverterUseCase.convertToMeterPerSecond(resultValue, fromUnit);
-        resultValue = speedConverterUseCase.convertFromMeterPerSecond(resultValue, toUnit);
-        _transResult.add('${speedConverterUseCase.formatNumber(resultValue)} $toUnit');
+        double resultValue = weight;
+        resultValue = weightConverterUseCase.convertToGram(resultValue, fromUnit);
+        resultValue = weightConverterUseCase.convertFromGram(resultValue, toUnit);
+        _transResult.add('${weightConverterUseCase.formatNumber(resultValue)} $toUnit');
       }
     }
   }
 
   void resetValues() {
     setState(() {
-      speedController.clear();
-      speed = 0;
+      weightController.clear();
+      weight = 0;
       _transResult.clear();
     });
-    convertSpeed();
+    convertWeight();
   }
 }

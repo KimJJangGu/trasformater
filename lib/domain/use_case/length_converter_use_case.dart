@@ -1,7 +1,8 @@
 import 'package:intl/intl.dart';
 
-// 단위 변환, 쉼표 및 소수점 기능 구현
 class LengthConverterUseCase {
+
+  // 단위 변환
   List<String> convertLength(double value, String fromUnit, List<String> units) {
     List<String> transResult = [];
     for (String toUnit in units) {
@@ -14,7 +15,7 @@ class LengthConverterUseCase {
     return transResult;
   }
 
-  // 단위별 환산 값 계산
+  // 단위별 환산 값 계산, 단위를 m로 변환
   double convertToMeter(double value, String unit) {
     switch (unit) {
       case "mm":
@@ -38,7 +39,7 @@ class LengthConverterUseCase {
     }
   }
 
-  // 단위별 환산 값 계산
+  // 단위별 환산 값 계산, m에서 다른 단위로 변환
   double convertFromMeter(double value, String unit) {
     switch (unit) {
       case "mm":
@@ -62,6 +63,7 @@ class LengthConverterUseCase {
     }
   }
 
+  // 천 단위 구분 쉼표, 소수점 표현
   String formatNumber(double resultNum) {
     return NumberFormat('###,###.##########').format(resultNum);
   }
