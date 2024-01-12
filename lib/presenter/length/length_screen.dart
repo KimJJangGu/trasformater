@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 import 'package:transformation/presenter/length/length_screen_view_model.dart';
 
@@ -41,53 +42,33 @@ class _LengthScreenState extends State<LengthScreen> {
           : ListView(
               children: [_lengthScreenWidget(), _lengthImageWidget()],
             ),
-      floatingActionButton: FloatingActionButton(
-        elevation: 4,
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: const IconThemeData(size: 22.0),
         backgroundColor: Colors.white,
-        onPressed: () {
-          showModalBottomSheet(
-            backgroundColor: Colors.transparent,
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                height: 170,
-                margin: const EdgeInsets.only(left: 70, right: 70, bottom: 70),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: const Center(
-                          child: Text(
-                        '무게',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                      onTap: () {
-                        context.go('/start/weight');
-                      },
-                    ),
-                    ListTile(
-                      title: const Center(
-                          child: Text(
-                        '속도',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                      onTap: () {
-                        context.go('/start/speed');
-                      },
-                    ),
-                  ],
-                ),
-              );
+        foregroundColor: Colors.black,
+        children: [
+          SpeedDialChild(
+            child: const Icon(Icons.scale_outlined),
+            backgroundColor: Colors.white,
+            label: '무게',
+            labelStyle: const TextStyle(fontSize: 16),
+            onTap: () {
+              context.go('/start/weight');
             },
-          );
-        },
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: const Icon(Icons.autorenew_rounded),
+            shape: const CircleBorder(),
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.speed_outlined),
+            backgroundColor: Colors.white,
+            label: '속도',
+            labelStyle: const TextStyle(fontSize: 16),
+            onTap: () {
+              context.go('/start/speed');
+            },
+            shape: const CircleBorder(),
+          ),
+        ],
       ),
     );
   }
