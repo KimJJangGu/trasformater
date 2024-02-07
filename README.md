@@ -1,6 +1,6 @@
 # transformation
 
-단위 변환기 앱(Clean Architecture)
+단위 변환기 앱
 
 ## Getting Started
 
